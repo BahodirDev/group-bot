@@ -3,7 +3,8 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import sendTelegramMessage from "./telegram.js";
-import bootstrap from "./config/bot-test.js";
+// import bootstrap from "./config/bot-test.js";
+import StatusController from "./status-controller.js";
 import pkg from "./generated/prisma/client.js"; // agar `output` yozmagan bo'lsangiz
 const { PrismaClient } = pkg;
 
@@ -18,8 +19,8 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(bodyParser.json());
 
-bootstrap(); // faqat 1 marta chaqiramiz
-
+// bootstrap(); // faqat 1 marta chaqiramiz
+StatusController();
 app.post("/api/submit", async (req, res) => {
   const { name, phone, company } = req.body;
 
@@ -40,7 +41,7 @@ app.post("/api/submit", async (req, res) => {
     const message = `📩 Yangi ariza\n👤 Ism: ${name}\n📞 Tel: ${phone}\n🏢 Kompaniya: ${
       company || "yo'q"
     }`;
-    await sendTelegramMessage(message);
+    await sendTelegramMessage(message, newUser.id);
 
     return res.status(201).json({ success: true, user: newUser });
   } catch (err) {
