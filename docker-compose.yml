@@ -1,17 +1,31 @@
 version: '3.8'
 
 services:
+  server:
+    build: .
+    container_name: crmbot-server
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
   postgres:
-    image: postgres:15
-    restart: always
+    image: postgres:20
+    container_name: crmbot-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5433:5432"
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - money_bot_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
 volumes:
-  money_bot_data:
+  postgres_data:
